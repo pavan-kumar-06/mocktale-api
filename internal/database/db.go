@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -12,9 +13,14 @@ import (
 var DB *sql.DB
 
 func InitDB() error {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-	dbPath := filepath.Join(basepath, "..", "..", "movies.db")
+	// Use environment variable or fallback to local path
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		// Fallback for development
+		_, b, _, _ := runtime.Caller(0)
+		basepath := filepath.Dir(b)
+		dbPath = filepath.Join(basepath, "..", "..", "movies.db")
+	}
 
 	var err error
 	DB, err = sql.Open("sqlite3", dbPath)
@@ -44,7 +50,7 @@ func InitDB() error {
 		log.Printf("⚠️ Could not set SQLite optimizations: %v", err)
 	}
 
-	// INITIALIZE RESPONSE MANAGER - THIS WAS MISSING
+	// INITIALIZE RESPONSE MANAGER
 	InitResponseManager(DB)
 	
 	log.Println("✅ Database connected successfully")
