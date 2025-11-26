@@ -14,6 +14,8 @@ func main() {
 	// Load .env file
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
+	} else {
+		log.Println("✅ .env file loaded successfully")
 	}
 
 	gin.SetMode(gin.ReleaseMode)
